@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Policy_Enc">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Policy_Enc.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
