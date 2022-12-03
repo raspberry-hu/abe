@@ -8,9 +8,9 @@ import static com.baomidou.mybatisplus.annotation.IdType.AUTO;
 public class aberequest {
     @TableId(type = AUTO)
     private Integer id;
-    private Integer provider_id;
-    private Integer requester_id;
-    private Integer file_id;
+    private Integer providerId;
+    private Integer requesterId;
+    private Integer fileId;
     private String attribute;
     private String privatekey;
 }

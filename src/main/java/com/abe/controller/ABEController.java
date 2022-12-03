@@ -57,9 +57,9 @@ public class ABEController {
             return new CommonResponse<>(300, "未初始化");
         }
         String dirproperty = System.getProperty("user.dir");
-        String fileName = dirproperty + Constant.abeFile + "/" + id +file.getName();
-        String ctFileName = dirproperty + Constant.abeFile + "/" + id + "/ct_" + file.getName();
-        String policyFileName = dirproperty + Constant.abeFile + "/" + id + "/policy_" + file.getName();
+        String fileName = dirproperty + Constant.abeFile + "/" + id +"/or_"+file.getOriginalFilename();
+        String ctFileName = dirproperty + Constant.abeFile + "/" + id + "/ct_" + file.getOriginalFilename();
+        String policyFileName = dirproperty + Constant.abeFile + "/" + id + "/policy_" + file.getOriginalFilename();
         saveFile(file,fileName);
         saveFile(policyFile,policyFileName);
         FileInputStream fileInputStream = (FileInputStream) file.getInputStream();
@@ -110,7 +110,7 @@ public class ABEController {
         System.out.println(abefile);
         String response = null;
         try {
-            response = aberequestSQLpost.addRequest(id, fileId, abefile.getUser_id(), policy);
+            response = aberequestSQLpost.addRequest(id, fileId, abefile.getUserId(), policy);
         } catch (Exception exception) {
             return new CommonResponse<>(300, "请求失败");
         }
@@ -121,7 +121,7 @@ public class ABEController {
     public CommonResponse decryptFile(@RequestParam("fileid") Integer fileid) throws GeneralSecurityException, IOException {
         List<aberequest> aberequestTemp = aberequestSQLpost.providerSearch(fileid);
         String privatekey = aberequestTemp.get(0).getPrivatekey();
-        String address = abefileSQLpost.selectByFileId(fileid).getEncryptedfile_address();
+        String address = abefileSQLpost.selectByFileId(fileid).getEncryptedfileAddress();
         return new CommonResponse<>(200, CPABE.kemDecrypt(address,privatekey));
     }
 
@@ -130,7 +130,7 @@ public class ABEController {
         List<aberequest> userAttList = aberequestSQLpost.providerSearch(userId);
         String temp = null;
         for (int i = 0; i < userAttList.size();i++) {
-            if(userAttList.get(i).getFile_id() == fileid) {
+            if(userAttList.get(i).getFileId() == fileid) {
                 temp = userAttList.get(i).getAttribute();
             }
         }

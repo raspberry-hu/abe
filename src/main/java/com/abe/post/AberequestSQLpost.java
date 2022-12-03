@@ -33,7 +33,11 @@ public class AberequestSQLpost {
         queryWrapper.select("id","provider_id","requester_id","file_id","attribute","privatekey");
         try{
             List<aberequest> aberequests = sqLpost.aberequestMapper.selectList(queryWrapper);
-
+            for(aberequest k:aberequests)
+            {
+                if(k.getPrivatekey()==null) k.setPrivatekey("0");
+                else k.setPrivatekey("1");
+            }
             return aberequests;
         } finally {
 
@@ -45,6 +49,11 @@ public class AberequestSQLpost {
         queryWrapper.select("id","provider_id","requester_id","file_id","attribute","privatekey");
         try{
             List<aberequest> aberequests = sqLpost.aberequestMapper.selectList(queryWrapper);
+            for(aberequest k:aberequests)
+            {
+                if(k.getPrivatekey()==null) k.setPrivatekey("0");
+                else k.setPrivatekey("1");
+            }
             return aberequests;
         } finally {
 
@@ -65,9 +74,9 @@ public class AberequestSQLpost {
 
     public String addRequest(Integer id, Integer fileId, Integer providerId, String policy){
         aberequest aberequest = new aberequest();
-        aberequest.setFile_id(fileId);
-        aberequest.setRequester_id(id);
-        aberequest.setProvider_id(providerId);
+        aberequest.setFileId(fileId);
+        aberequest.setRequesterId(id);
+        aberequest.setProviderId(providerId);
         aberequest.setAttribute(policy);
         sqLpost.aberequestMapper.insert(aberequest);
         return "插入成功";
