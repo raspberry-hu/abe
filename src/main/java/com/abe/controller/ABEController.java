@@ -1,6 +1,7 @@
 package com.abe.controller;
 
 
+import com.abe.bean.aberequest;
 import com.abe.bean.abeuser;
 import com.abe.post.AbefileSQLpost;
 import com.abe.post.AberequestSQLpost;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -28,8 +30,8 @@ public class ABEController {
     AberequestSQLpost aberequestSQLpost= new AberequestSQLpost();
     private static String data;
     @PostMapping("/initkey")
-    public CommonResponse initKey(@RequestParam("userid") Long id, @RequestParam("securitylabel") String securityLabel){
-
+    public CommonResponse initKey(@RequestParam("userid") Integer id){
+        String securityLabel="128";
         String pairingParametersFileName =  "security_params/security_level_" + securityLabel + "bits.properties";
         String dirproperty = System.getProperty("user.dir");
         String filedata=dirproperty+ Constant.abeFile;
@@ -47,15 +49,16 @@ public class ABEController {
         return commonResponse;
     }
     @PostMapping("/encryptFile")
-    public CommonResponse encryptFile(@RequestParam("userid") Long id,@RequestParam("file") MultipartFile file, @RequestParam("policyfile") MultipartFile policyFile) throws IOException, GeneralSecurityException, JSONException {
+    public CommonResponse encryptFile(@RequestParam("userid") Integer id,@RequestParam("file") MultipartFile file, @RequestParam("policyfile") MultipartFile policyFile) throws IOException, GeneralSecurityException, JSONException {
         abeuser abeuser = abeuserSQLpost.getKey(id);
         if (abeuser == null) {
             return new CommonResponse<>(300, "未初始化");
         }
-        String fileid = UUID.randomUUID().toString();
         String dirproperty = System.getProperty("user.dir");
-        String ctFileName = dirproperty + Constant.abeFile + "/" + id + "/ct_" + fileid;
-        String policyFileName = dirproperty + Constant.abeFile + "/" + id + "/policy_" + fileid;
+        String fileName = dirproperty + Constant.abeFile + "/" + id +file.getName();
+        String ctFileName = dirproperty + Constant.abeFile + "/" + id + "/ct_" + file.getName();
+        String policyFileName = dirproperty + Constant.abeFile + "/" + id + "/policy_" + file.getName();
+        saveFile(file,fileName);
         saveFile(policyFile,policyFileName);
         FileInputStream fileInputStream = (FileInputStream) file.getInputStream();
         byte[] b = new byte[(int) file.getSize()];  //定义文件大小的字节数据
@@ -63,9 +66,27 @@ public class ABEController {
         data = new String(b, StandardCharsets.UTF_8); //将字节数据转换为UTF-8编码的字符串
         String pkFileName = abeuser.getPublickey();
         CPABE.kemEncrypt(data, policyFileName, pkFileName, ctFileName);
-        String addfile = abefileSQLpost.addfile(id, fileid, ctFileName, policyFileName);
+        String addfile = abefileSQLpost.addfile(id, fileName, ctFileName, policyFileName);
         return new CommonResponse<>(200, addfile);
+    }
+    @PostMapping("/providersearch")
+    public CommonResponse providerSearch(@RequestParam("userid") Integer id) {
+        abeuser abeuser = abeuserSQLpost.getKey(id);
+        if (abeuser == null) {
+            return new CommonResponse<>(300, "未初始化");
+        }
+        List<aberequest> aberequests = aberequestSQLpost.providerSearch(id);
+        return new CommonResponse<>(200, aberequests);
 
+    }
+    @PostMapping("/requestersearch")
+    public CommonResponse requesterSearch(@RequestParam("userid") Integer id) {
+        abeuser abeuser = abeuserSQLpost.getKey(id);
+        if (abeuser == null) {
+            return new CommonResponse<>(300, "未初始化");
+        }
+        List<aberequest> aberequests = aberequestSQLpost.requestSearch(id);
+        return new CommonResponse<>(200, aberequests);
     }
     private static void saveFile(MultipartFile file,String filename){
         FileOutputStream fileOutputStream = null;

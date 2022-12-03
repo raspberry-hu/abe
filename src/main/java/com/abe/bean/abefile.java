@@ -8,10 +8,9 @@ import static com.baomidou.mybatisplus.annotation.IdType.AUTO;
 @Data
 public class abefile {
     @TableId(type = AUTO)
-    private Long id;
-    private Long userid;
-    private String fileid;
-    private String file;
-    private byte status;
-    private String policy;
+    private Integer id;
+    private Integer user_id;
+    private String file_address;
+    private String encryptedfile_address;
+    private String policy_address;
 }

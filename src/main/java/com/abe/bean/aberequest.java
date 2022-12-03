@@ -7,9 +7,10 @@ import static com.baomidou.mybatisplus.annotation.IdType.AUTO;
 @Data
 public class aberequest {
     @TableId(type = AUTO)
-    private Long id;
-    private Long providerid;
-    private Long requesterid;
-    private Long fileid;
+    private Integer id;
+    private Integer provider_id;
+    private Integer requester_id;
+    private Integer file_id;
+    private String attribute;
     private String privatekey;
 }
