@@ -6,6 +6,7 @@ import com.abe.service.AberequestService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -44,6 +45,18 @@ public class AberequestSQLpost {
         queryWrapper.select("id","provider_id","requester_id","file_id","attribute","privatekey");
         try{
             List<aberequest> aberequests = sqLpost.aberequestMapper.selectList(queryWrapper);
+            return aberequests;
+        } finally {
+
+        }
+    }
+
+    public aberequest privateSearch(Integer fileId) {
+        QueryWrapper<aberequest> queryWrapper = new QueryWrapper<aberequest>();
+        queryWrapper.eq("file_id",fileId);
+        queryWrapper.select("id","provider_id","requester_id","file_id","attribute","privatekey");
+        try{
+            aberequest aberequests = (aberequest) sqLpost.aberequestMapper.selectList(queryWrapper);
             return aberequests;
         } finally {
 

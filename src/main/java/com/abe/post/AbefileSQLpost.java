@@ -33,4 +33,9 @@ public class AbefileSQLpost {
         int insert = sqLpost.abefileMapper.insert(abefile);
         return "加密成功,id:"+insert;
     }
+
+    public abefile selectByFileId(Integer id) {
+        abefile temp = sqLpost.abefileMapper.selectById(id);
+        return temp;
+    }
 }

@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.UUID;
 
@@ -88,6 +89,33 @@ public class ABEController {
         List<aberequest> aberequests = aberequestSQLpost.requestSearch(id);
         return new CommonResponse<>(200, aberequests);
     }
+
+    @PostMapping("decryptFile")
+    public CommonResponse decryptFile(@RequestParam("fileid") Integer fileid) throws GeneralSecurityException, IOException {
+        List<aberequest> aberequestTemp = aberequestSQLpost.providerSearch(fileid);
+        String privatekey = aberequestTemp.get(0).getPrivatekey();
+        String address = abefileSQLpost.selectByFileId(fileid).getEncryptedfile_address();
+        return new CommonResponse<>(200, CPABE.kemDecrypt(address,privatekey));
+    }
+
+    @PostMapping("authorizeFile")
+    public CommonResponse authorizeFile(@RequestParam("fileid")Integer fileid, @RequestParam("userid")Integer userId) throws NoSuchAlgorithmException {
+        List<aberequest> userAttList = aberequestSQLpost.providerSearch(userId);
+        String temp = null;
+        for (int i = 0; i < userAttList.size();i++) {
+            if(userAttList.get(i).getFile_id() == fileid) {
+                temp = userAttList.get(i).getAttribute();
+            }
+        }
+        String masterKey = abeuserSQLpost.getKey(userId).getMasterkey();
+        String publicKey = abeuserSQLpost.getKey(userId).getPublickey();
+        String dirproperty = System.getProperty("user.dir");
+        String fileName = dirproperty + Constant.abeFile + "/" + fileid + "privateKey";
+        String[] arr = temp.split(",");
+        CPABE.keygen(arr,publicKey,masterKey,fileName);
+        return new CommonResponse(200,"认证成功");
+    }
+
     private static void saveFile(MultipartFile file,String filename){
         FileOutputStream fileOutputStream = null;
         InputStream inputStream = null;
