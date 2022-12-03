@@ -35,7 +35,6 @@
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-test-autoconfigure</artifactId>
             <version>2.1.4</version>
-
         </dependency>
 
         <dependency>
@@ -52,6 +51,44 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.49</version>
         </dependency>
+        <dependency>
+            <groupId>com.abe</groupId>
+            <artifactId>jpbc</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/jpbc-api-2.0.0 2.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.abe</groupId>
+            <artifactId>jpbc.plaf</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/jpbc-plaf-2.0.0 2.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.abe</groupId>
+            <artifactId>commons</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/commons-io-2.11.0.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.abe</groupId>
+            <artifactId>json</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/json-20220320.jar</systemPath>
+        </dependency>
     </dependencies>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

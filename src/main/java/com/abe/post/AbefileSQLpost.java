@@ -38,4 +38,9 @@ public class AbefileSQLpost {
         abefile temp = sqLpost.abefileMapper.selectById(id);
         return temp;
     }
+
+    public abefile selectFileId(Integer id){
+        System.out.println(id);
+        return sqLpost.abefileMapper.selectById(id);
+    }
 }

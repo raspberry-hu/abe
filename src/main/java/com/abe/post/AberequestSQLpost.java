@@ -62,4 +62,14 @@ public class AberequestSQLpost {
 
         }
     }
+
+    public String addRequest(Integer id, Integer fileId, Integer providerId, String policy){
+        aberequest aberequest = new aberequest();
+        aberequest.setFile_id(fileId);
+        aberequest.setRequester_id(id);
+        aberequest.setProvider_id(providerId);
+        aberequest.setAttribute(policy);
+        sqLpost.aberequestMapper.insert(aberequest);
+        return "插入成功";
+    }
 }
