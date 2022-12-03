@@ -35,19 +35,19 @@ public class AbeuserSQLpost {
 
             } else {
                 abeuser abeuser = new abeuser();
-                abeuser.setUser_id(userID);
+                abeuser.setUserId(userID);
                 abeuser.setMasterkey(masterkey);
                 abeuser.setPublickey(publickey);
                 sqLpost.abeuserMapper.insert(abeuser);
             }
-        return "生成密钥成功";
+            return "生成密钥成功";
         } finally {
 
         }
     }
     public abeuser getKey(Integer userID){
         QueryWrapper<abeuser> queryWrapper = new QueryWrapper<abeuser>();
-        queryWrapper.eq("user",userID).last("LIMIT 1");
+        queryWrapper.eq("user_id",userID).last("LIMIT 1");
         try {
             abeuser abeuser = sqLpost.abeuserMapper.selectOne(queryWrapper);
             return abeuser;
