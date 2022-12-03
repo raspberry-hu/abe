@@ -9,7 +9,7 @@ import static com.baomidou.mybatisplus.annotation.IdType.AUTO;
 public class abeuser {
     @TableId(type = AUTO)
     private Integer id;
-    private Integer user_id;
+    private Integer userId;
     private String masterkey;
     private String publickey;
 }
