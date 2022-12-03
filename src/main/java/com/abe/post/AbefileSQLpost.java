@@ -33,4 +33,9 @@ public class AbefileSQLpost {
         int insert = sqLpost.abefileMapper.insert(abefile);
         return "加密成功,id:"+insert;
     }
+    // 根据文件id查询用户id
+    public abefile selectFileId(Integer id){
+        System.out.println(id);
+        return sqLpost.abefileMapper.selectById(id);
+    }
 }

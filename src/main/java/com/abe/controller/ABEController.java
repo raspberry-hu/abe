@@ -88,6 +88,31 @@ public class ABEController {
         List<aberequest> aberequests = aberequestSQLpost.requestSearch(id);
         return new CommonResponse<>(200, aberequests);
     }
+    @PostMapping("/request")
+    public CommonResponse requestFile(@RequestParam("id") Integer id,
+                                      @RequestParam("file_id") Integer fileId,
+                                      @RequestParam("policy") String policy){
+        // 1. 现根据文件id得到对应的授权用户id
+        abefile abefile = abefileSQLpost.selectFileId(fileId);
+        if(abefile == null){
+            return new CommonResponse<>(300, "文件不存在");
+        }
+        /*
+            2. 插入请求
+            id: 请求者id
+            providerId: 文件提供者id-通过文件id查询
+            fileId: 文件id
+            policy: 策略
+         */
+        System.out.println(abefile);
+        String response = null;
+        try {
+            response = aberequestSQLpost.addRequest(id, fileId, abefile.getUserId(), policy);
+        } catch (Exception exception) {
+            return new CommonResponse<>(300, "请求失败");
+        }
+        return new CommonResponse<>(200, response);
+    }
     private static void saveFile(MultipartFile file,String filename){
         FileOutputStream fileOutputStream = null;
         InputStream inputStream = null;
