@@ -24,13 +24,13 @@ public class AbefileSQLpost {
         sqLpost.abefileMapper=this.abefileMapper;
         sqLpost.abefileService=this.abefileService;
     }
-    public String addfile(Long id,String fileid,String file,String policy){
+    public String addfile(Integer id,String file,String enfile,String policy){
         abefile abefile = new abefile();
-        abefile.setUserid(id);
-        abefile.setFileid(fileid);
-        abefile.setFile(file);
-        abefile.setPolicy(policy);
-        sqLpost.abefileMapper.insert(abefile);
-        return "加密成功";
+        abefile.setUser_id(id);
+        abefile.setFile_address(file);
+        abefile.setEncryptedfile_address(enfile);
+        abefile.setPolicy_address(policy);
+        int insert = sqLpost.abefileMapper.insert(abefile);
+        return "加密成功,id:"+insert;
     }
 }

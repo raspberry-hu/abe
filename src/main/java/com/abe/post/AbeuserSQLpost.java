@@ -25,9 +25,9 @@ public class AbeuserSQLpost {
         sqLpost.abeuserMapper=this.abeuserMapper;
         sqLpost.abeuserService=this.abeuserService;
     }
-    public String abeuserInitKey(Long userID,String publickey, String masterkey){
+    public String abeuserInitKey(Integer userID,String publickey, String masterkey){
         QueryWrapper<abeuser> queryWrapper = new QueryWrapper<abeuser>();
-        queryWrapper.eq("userid",userID).last("LIMIT 1");
+        queryWrapper.eq("user_id",userID).last("LIMIT 1");
         try {
 
             if (sqLpost.abeuserMapper.selectOne(queryWrapper) != null) {
@@ -35,7 +35,7 @@ public class AbeuserSQLpost {
 
             } else {
                 abeuser abeuser = new abeuser();
-                abeuser.setUserid(Math.toIntExact(userID));
+                abeuser.setUser_id(userID);
                 abeuser.setMasterkey(masterkey);
                 abeuser.setPublickey(publickey);
                 sqLpost.abeuserMapper.insert(abeuser);
@@ -45,7 +45,7 @@ public class AbeuserSQLpost {
 
         }
     }
-    public abeuser getKey(Long userID){
+    public abeuser getKey(Integer userID){
         QueryWrapper<abeuser> queryWrapper = new QueryWrapper<abeuser>();
         queryWrapper.eq("user",userID).last("LIMIT 1");
         try {
