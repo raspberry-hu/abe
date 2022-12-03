@@ -9,8 +9,8 @@ import static com.baomidou.mybatisplus.annotation.IdType.AUTO;
 public class abefile {
     @TableId(type = AUTO)
     private Integer id;
-    private Integer user_id;
-    private String file_address;
-    private String encryptedfile_address;
-    private String policy_address;
+    private Integer userId;
+    private String fileAddress;
+    private String encryptedfileAddress;
+    private String policyAddress;
 }
