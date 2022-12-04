@@ -1,3 +1,4 @@
+com/abe/controller/ABEController.class
 com/abe/bean/abeuser.class
 com/abe/post/AbeuserSQLpost.class
 com/abe/tool/CommonResponse.class
@@ -12,6 +13,7 @@ com/abe/service/AberequestService.class
 com/abe/mapper/AbefileMapper.class
 com/abe/bean/aberequest.class
 com/abe/post/AberequestSQLpost.class
+com/abe/post/AbefileSQLpost.class
 com/abe/mapper/AbeuserMapper.class
 com/abe/GUICPABE.class
 com/abe/tool/Constant.class

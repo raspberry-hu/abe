@@ -10,6 +10,7 @@ import com.abe.post.AbeuserSQLpost;
 import com.abe.tool.CommonResponse;
 import com.abe.tool.Constant;
 import com.abe.CPABE;
+import com.baomidou.mybatisplus.extension.api.IErrorCode;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.json.JSONException;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -136,9 +137,13 @@ public class ABEController {
         String privatekey = aberequestTemp.getPrivatekey();
         Integer fileid =  aberequestTemp.getFileId();
         String address = abefileSQLpost.selectByFileId(fileid).getEncryptedfileAddress();
-        String temp = CPABE.kemDecrypt(address,privatekey);
-        download(response, temp);
-        return new CommonResponse<>(200, CPABE.kemDecrypt(address,privatekey));
+        try {
+            String temp = CPABE.kemDecrypt(address, privatekey);
+            download(response, temp);
+            return new CommonResponse<>(200, temp);
+        } finally {
+            return new CommonResponse<>(500, "false");
+        }
     }
 
     @PostMapping("authorizeFile")
