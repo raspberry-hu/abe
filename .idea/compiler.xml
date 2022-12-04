@@ -11,7 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="abe" target="8" />
+      <module name="abe" target="1.8" />
       <module name="Policy_Enc" target="1.8" />
     </bytecodeTargetLevel>
   </component>

@@ -1,6 +1,7 @@
 package com.abe.post;
 
 import com.abe.bean.aberequest;
+import com.abe.bean.abeuser;
 import com.abe.mapper.AberequestMapper;
 import com.abe.service.AberequestService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -80,5 +81,21 @@ public class AberequestSQLpost {
         aberequest.setAttribute(policy);
         sqLpost.aberequestMapper.insert(aberequest);
         return "插入成功";
+    }
+
+    public String updateRequest(aberequest aberequest){
+        sqLpost.aberequestMapper.updateById(aberequest);
+        return "更新成功";
+    }
+
+    public aberequest getKey(Integer userID){
+        QueryWrapper<aberequest> queryWrapper = new QueryWrapper<aberequest>();
+        queryWrapper.eq("id",userID).last("LIMIT 1");
+        try {
+            aberequest aberequest = sqLpost.aberequestMapper.selectOne(queryWrapper);
+            return aberequest;
+        } finally {
+
+        }
     }
 }

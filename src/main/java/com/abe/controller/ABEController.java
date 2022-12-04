@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
@@ -50,7 +53,7 @@ public class ABEController {
         CommonResponse<Object> commonResponse = new CommonResponse<>(200, initKey);
         return commonResponse;
     }
-    @PostMapping("/encryptFile")
+    @PostMapping("/encryptfile")
     public CommonResponse encryptFile(@RequestParam("userid") Integer id,@RequestParam("file") MultipartFile file, @RequestParam("policyfile") MultipartFile policyFile) throws IOException, GeneralSecurityException, JSONException {
         abeuser abeuser = abeuserSQLpost.getKey(id);
         if (abeuser == null) {
@@ -117,29 +120,40 @@ public class ABEController {
         return new CommonResponse<>(200, response);
     }
 
+    public static void download(HttpServletResponse response, String address) throws IOException {
+        byte[] buf = address.getBytes();
+        response.setContentType("application/octet-stream;charset=utf-8");
+        response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("plaintext", "UTF-8"));
+        response.addHeader("Content-Length", "" + buf.length);
+        ServletOutputStream outputStream = response.getOutputStream();
+        outputStream.write(buf, 0, buf.length);
+        outputStream.close();
+    }
+
     @PostMapping("decryptFile")
-    public CommonResponse decryptFile(@RequestParam("fileid") Integer fileid) throws GeneralSecurityException, IOException {
-        List<aberequest> aberequestTemp = aberequestSQLpost.providerSearch(fileid);
-        String privatekey = aberequestTemp.get(0).getPrivatekey();
+    public CommonResponse decryptFile(HttpServletResponse response, @RequestParam("id") Integer id) throws GeneralSecurityException, IOException {
+        aberequest aberequestTemp = aberequestSQLpost.getKey(id);
+        String privatekey = aberequestTemp.getPrivatekey();
+        Integer fileid =  aberequestTemp.getFileId();
         String address = abefileSQLpost.selectByFileId(fileid).getEncryptedfileAddress();
+        String temp = CPABE.kemDecrypt(address,privatekey);
+        download(response, temp);
         return new CommonResponse<>(200, CPABE.kemDecrypt(address,privatekey));
     }
 
     @PostMapping("authorizeFile")
-    public CommonResponse authorizeFile(@RequestParam("fileid")Integer fileid, @RequestParam("userid")Integer userId) throws NoSuchAlgorithmException {
-        List<aberequest> userAttList = aberequestSQLpost.providerSearch(userId);
-        String temp = null;
-        for (int i = 0; i < userAttList.size();i++) {
-            if(userAttList.get(i).getFileId() == fileid) {
-                temp = userAttList.get(i).getAttribute();
-            }
-        }
-        String masterKey = abeuserSQLpost.getKey(userId).getMasterkey();
-        String publicKey = abeuserSQLpost.getKey(userId).getPublickey();
+    public CommonResponse authorizeFile(@RequestParam("id")Integer id) throws NoSuchAlgorithmException {
+        aberequest userAttList = aberequestSQLpost.getKey(id);
+        Integer providerId = userAttList.getProviderId();
+        String temp = userAttList.getAttribute();
+        String masterKey = abeuserSQLpost.getKey(providerId).getMasterkey();
+        String publicKey = abeuserSQLpost.getKey(providerId).getPublickey();
         String dirproperty = System.getProperty("user.dir");
-        String fileName = dirproperty + Constant.abeFile + "/" + fileid + "privateKey";
+        String fileName = dirproperty + Constant.abeFile + "/" + id + "privateKey";
         String[] arr = temp.split(",");
         CPABE.keygen(arr,publicKey,masterKey,fileName);
+        userAttList.setPrivatekey(fileName);
+        aberequestSQLpost.updateRequest(userAttList);
         return new CommonResponse(200,"认证成功");
     }
 
