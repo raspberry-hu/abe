@@ -31,7 +31,7 @@ public class AbefileSQLpost {
         abefile.setEncryptedfileAddress(enfile);
         abefile.setPolicyAddress(policy);
         int insert = sqLpost.abefileMapper.insert(abefile);
-        return "加密成功,id:"+insert;
+        return "加密成功,id:"+abefile.getId();
     }
     public abefile selectByFileId(Integer id) {
         abefile temp = sqLpost.abefileMapper.selectById(id);
