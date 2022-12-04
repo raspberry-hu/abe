@@ -60,20 +60,28 @@ public class ABEController {
         if (abeuser == null) {
             return new CommonResponse<>(300, "未初始化");
         }
-        String dirproperty = System.getProperty("user.dir");
-        String fileName = dirproperty + Constant.abeFile + "/" + id +"/or_"+file.getOriginalFilename();
-        String ctFileName = dirproperty + Constant.abeFile + "/" + id + "/ct_" + file.getOriginalFilename();
-        String policyFileName = dirproperty + Constant.abeFile + "/" + id + "/policy_" + file.getOriginalFilename();
-        saveFile(file,fileName);
-        saveFile(policyFile,policyFileName);
-        FileInputStream fileInputStream = (FileInputStream) file.getInputStream();
-        byte[] b = new byte[(int) file.getSize()];  //定义文件大小的字节数据
-        fileInputStream.read(b);//将文件数据存储在b数组
-        data = new String(b, StandardCharsets.UTF_8); //将字节数据转换为UTF-8编码的字符串
-        String pkFileName = abeuser.getPublickey();
-        CPABE.kemEncrypt(data, policyFileName, pkFileName, ctFileName);
-        String addfile = abefileSQLpost.addfile(id, fileName, ctFileName, policyFileName);
-        return new CommonResponse<>(200, addfile);
+        try {
+            String dirproperty = System.getProperty("user.dir");
+            String fileName = dirproperty + Constant.abeFile + "/" + id + "/or_" + file.getOriginalFilename();
+            String ctFileName = dirproperty + Constant.abeFile + "/" + id + "/ct_" + file.getOriginalFilename();
+            String policyFileName = dirproperty + Constant.abeFile + "/" + id + "/policy_" + file.getOriginalFilename();
+            saveFile(file, fileName);
+            saveFile(policyFile, policyFileName);
+            FileInputStream fileInputStream = (FileInputStream) file.getInputStream();
+            byte[] b = new byte[(int) file.getSize()];  //定义文件大小的字节数据
+            fileInputStream.read(b);//将文件数据存储在b数组
+            data = new String(b, StandardCharsets.UTF_8); //将字节数据转换为UTF-8编码的字符串
+            String pkFileName = abeuser.getPublickey();
+            CPABE.kemEncrypt(data, policyFileName, pkFileName, ctFileName);
+            String addfile = abefileSQLpost.addfile(id, fileName, ctFileName, policyFileName);
+            return new CommonResponse<>(200, addfile);
+        } catch (IOException e) {
+            return new CommonResponse<>(500, e);
+        } catch (GeneralSecurityException e) {
+            return new CommonResponse<>(500, e);
+        } catch (JSONException e) {
+            return new CommonResponse<>(500, e);
+        }
     }
     @PostMapping("/providersearch")
     public CommonResponse providerSearch(@RequestParam("userid") Integer id) {
@@ -141,8 +149,10 @@ public class ABEController {
             String temp = CPABE.kemDecrypt(address, privatekey);
             download(response, temp);
             return new CommonResponse<>(200, temp);
-        } finally {
-            return new CommonResponse<>(500, "false");
+        } catch (GeneralSecurityException e){
+            return new CommonResponse<>(500, e);
+        } catch (IOException e) {
+            return new CommonResponse<>(500,e);
         }
     }
 
@@ -156,10 +166,14 @@ public class ABEController {
         String dirproperty = System.getProperty("user.dir");
         String fileName = dirproperty + Constant.abeFile + "/" + id + "privateKey";
         String[] arr = temp.split(",");
-        CPABE.keygen(arr,publicKey,masterKey,fileName);
-        userAttList.setPrivatekey(fileName);
-        aberequestSQLpost.updateRequest(userAttList);
-        return new CommonResponse(200,"认证成功");
+        try {
+            CPABE.keygen(arr,publicKey,masterKey,fileName);
+            userAttList.setPrivatekey(fileName);
+            aberequestSQLpost.updateRequest(userAttList);
+            return new CommonResponse(200,"认证成功");
+        }catch (NoSuchAlgorithmException e){
+            return new CommonResponse(500,e);
+        }
     }
 
     private static void saveFile(MultipartFile file,String filename){
